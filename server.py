@@ -7,7 +7,7 @@ load_dotenv()
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 REDIRECT_URI = os.getenv("REDIRECT_URI")       # will be set to your ngrok url + /callback
-PORT = int(os.getenv("PORT", "8888"))
+# PORT = int(os.getenv("PORT", "8888"))
 TOKENS_FILE = "tokens.json"
 
 app = Flask(__name__)
