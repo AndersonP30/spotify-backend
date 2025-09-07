@@ -136,6 +136,31 @@ def track():
         "duration_ms": duration_ms
     })
 
+@app.route("/cover")
+def cover():
+    load_tokens()
+    if not refresh_access_token_if_needed():
+        return "Auth error", 401
+
+    headers = {"Authorization": f"Bearer {access_token}"}
+    r = requests.get("https://api.spotify.com/v1/me/player/currently-playing", headers=headers)
+    if r.status_code != 200:
+        return "Spotify error", r.status_code
+    data = r.json()
+    item = data.get("item", {})
+    image_url = item.get("album", {}).get("images", [{}])[0].get("url", "")
+    if not image_url:
+        return "No image", 404
+
+    # Fetch the image bytes directly
+    img_r = requests.get(image_url)
+    if img_r.status_code != 200:
+        return "Image fetch failed", img_r.status_code
+
+    # Return raw JPEG with correct headers
+    from flask import Response
+    return Response(img_r.content, mimetype="image/jpeg")
+
 if __name__ == "__main__":
     load_tokens()
     port = int(os.environ.get("PORT", 5000))
